@@ -1,58 +1,63 @@
-// prisma/schema.prisma
-
 datasource db {
-  provider = "mongodb" // Change to "postgresql" if using PostgreSQL
+  provider = "mongodb"  
   url      = env("DATABASE_URL")
+  relationMode = "prisma"
 }
 
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["fullTextSearch", "fullTextIndex"]
 }
 
 model Student {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  username  String   @unique
-  password  String
-  hostelId  String   @map("hostel_id") @db.ObjectId
-  email     String   @unique
-  documents Document[]
-  hostel    Hostel   @relation(fields: [hostelId], references: [id])
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  username    String
+  password    String
+  email       String    @unique
+  scholarNumber String   
+  userId      String    @unique
+  hostelId    String    @map("hostel_id") @db.ObjectId
+  documents   Document[]
+  hostel      Hostel    @relation(fields: [hostelId], references: [id])
 }
 
 model Warden {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  username  String   @unique
-  password  String
-  hostelId  String   @map("hostel_id") @db.ObjectId
-  email     String   @unique
-  hostel    Hostel   @relation(fields: [hostelId], references: [id])
-  accesses  DocumentAccess[] // Added relation field for DocumentAccess
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  username    String    @unique
+  password    String
+  email       String    @unique
+  userId      String    @unique
+  hostelId    String    @map("hostel_id") @db.ObjectId
+  hostel      Hostel    @relation(fields: [hostelId], references: [id])
+  accesses    DocumentAccess[] 
 }
 
 model Hostel {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  name      String   @map("hostel_name")
-  location  String
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  name      String    @map("hostel_name")
+  hostelNumber  String 
+  block String?
   students  Student[]
   wardens   Warden[]
+  @@unique([hostelNumber, block]) 
 }
 
 model Document {
-  id           String   @id @default(auto()) @map("_id") @db.ObjectId
-  studentId    String   @map("student_id") @db.ObjectId
-  filePath     String   @map("file_path")
-  uploadDate   DateTime @map("upload_date")
-  documentName String   @map("document_name")
-  status       DocumentStatus
-  student      Student  @relation(fields: [studentId], references: [id])
-  accesses     DocumentAccess[]
+  id            String          @id @default(auto()) @map("_id") @db.ObjectId
+  studentId     String          @map("student_id") @db.ObjectId
+  filePath      String          @map("file_path")
+  uploadDate    DateTime        @map("upload_date")
+  documentName  String          @map("document_name")
+  status        DocumentStatus
+  student       Student         @relation(fields: [studentId], references: [id])
+  accesses      DocumentAccess[]
 }
 
 model DocumentAccess {
-  id            String   @id @default(auto()) @map("_id") @db.ObjectId
-  documentId    String   @map("document_id") @db.ObjectId
-  wardenId      String   @map("warden_id") @db.ObjectId
-  accessGranted  DateTime @map("access_granted") 
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  documentId    String    @map("document_id") @db.ObjectId
+  wardenId      String    @map("warden_id") @db.ObjectId
+  accessGranted  DateTime  @map("access_granted")
   document      Document  @relation(fields: [documentId], references: [id])
   warden        Warden    @relation(fields: [wardenId], references: [id])
 }
