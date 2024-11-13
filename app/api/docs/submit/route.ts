@@ -5,7 +5,7 @@ import { use } from "react";
 export async function POST(req:Request) {
     try{
         const {userId} = await auth();
-        const {url} = await req.json();
+        const {url,documentName,semester} = await req.json();
         console.log(userId,url);
         if(!userId){
             return new NextResponse("Unauthorized",{status:401});
@@ -25,8 +25,9 @@ export async function POST(req:Request) {
               studentId: student.id,
               filePath: url, // Assuming files is an array
               uploadDate: new Date(),
-              documentName: 'reciept',
-              status: "active", // Set initial status
+              documentName: documentName,
+              status: "active", // Set initial status,
+              semester:semester
           },
       });
         console.log("------------------------------",document);

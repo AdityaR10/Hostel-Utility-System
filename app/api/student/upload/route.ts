@@ -6,7 +6,7 @@ export async function POST(req: Request) {
     try {
         const { userId } = await auth(); 
         const data = await req.json(); // Parse the JSON bod
-        console.log("Request Data:----------------------------------------", data); // Log the request data for debugging
+        // console.log("Request Data:----------------------------------------", data); // Log the request data for debugging
 
         if (!userId) {
             return new NextResponse("Unauthorized", { status: 401 });
@@ -22,10 +22,7 @@ export async function POST(req: Request) {
         } 
         const hostel = await db.hostel.findUnique({
             where: {
-                hostelNumber_block: {
-                    hostelNumber: data.hostelNumber,
-                    block: data.block,
-                },
+                 hostel:data.hostel
             },
         });
         
@@ -35,16 +32,12 @@ export async function POST(req: Request) {
         const newStudent = await db.student.create({
             data: { 
                 userId: userId,
-                username: data.username,
-                password: data.password,
+                name: data.name, 
                 email: data.email,
                 scholarNumber: data.scholarNumber,
                 hostel: {
                     connect: {
-                        hostelNumber_block: {
-                            hostelNumber: data.hostelNumber,
-                            block: data.block,
-                        },
+                        hostel:data.hostel
                     },
                 },
             },

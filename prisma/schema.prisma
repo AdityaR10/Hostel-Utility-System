@@ -11,8 +11,7 @@ generator client {
 
 model Student {
   id          String    @id @default(auto()) @map("_id") @db.ObjectId
-  username    String
-  password    String
+  name    String 
   email       String    @unique
   scholarNumber String   
   userId      String    @unique
@@ -34,12 +33,9 @@ model Warden {
 
 model Hostel {
   id        String    @id @default(auto()) @map("_id") @db.ObjectId
-  name      String    @map("hostel_name")
-  hostelNumber  String 
-  block String?
+  hostel      String    @map("hostel") @unique
   students  Student[]
   wardens   Warden[]
-  @@unique([hostelNumber, block]) 
 }
 
 model Document {
@@ -47,7 +43,8 @@ model Document {
   studentId     String          @map("student_id") @db.ObjectId
   filePath      String          @map("file_path")
   uploadDate    DateTime        @map("upload_date")
-  documentName  String          @map("document_name")
+  documentName  DocumentName          @map("document_name")
+  semester      Int
   status        DocumentStatus
   student       Student         @relation(fields: [studentId], references: [id])
   accesses      DocumentAccess[]
@@ -65,4 +62,9 @@ model DocumentAccess {
 enum DocumentStatus {
   active
   archived
+}
+enum DocumentName {
+  SemesterRegistrationReceipt
+  MessReceipt
+  HostelFeesReceipt
 }

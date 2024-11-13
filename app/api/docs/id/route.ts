@@ -9,32 +9,19 @@ export async function GET(req: Request) {
         const { userId } = await auth();
         const { searchParams } = new URL(req.url);
         const semester = searchParams.get('semester');
-        if(!semester) 
-            return NextResponse.json({ error: 'Missing or invalid semester parameter' }, { status: 400 });
+        const id = searchParams.get('id');
+        if(!semester || !id) 
+            return NextResponse.json({ error: 'Missing or invalid parameters' }, { status: 400 });
         // Check if userId is present
         if (!userId) {
             return new NextResponse("Unauthorized", { status: 401 });
         }
 
-        // Find the student associated with the userId
-        const student = await db.student.findUnique({
-            where: {
-                userId: userId,
-            },
-            select: {
-                id: true, // Select only the id field
-            },
-        });
-
-        // Check if student exists
-        if (!student) {
-            return new NextResponse("Student not found", { status: 404 });
-        }
         const semesterNumber = parseInt(semester, 10);
         // Fetch all documents for the student
         const documents = await db.document.findMany({
             where: {
-                studentId: student.id,
+                studentId: id,
                 semester:semesterNumber
             },
             orderBy: {
