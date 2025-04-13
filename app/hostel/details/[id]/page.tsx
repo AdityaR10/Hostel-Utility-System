@@ -44,6 +44,7 @@ export default function DisplayUploadedDocuments({
   const handleFetchDocuments = async () => {
     setLoading(true);
     setError(null);
+    console.log("change")
 
     try {
       const fetchedDocuments = await axios.get("/api/docs/id",{params:{semester,id}})
